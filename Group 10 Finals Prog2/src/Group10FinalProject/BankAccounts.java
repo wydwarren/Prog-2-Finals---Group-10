@@ -214,7 +214,44 @@ public class BankAccounts implements TransactionLoggable, AccountVerifiable {
     @Override
     public String logTransaction(String type, double amount, String description) {
         String transactionId = UUID.randomUUID().toString();
-        Transaction transaction = new Transaction(transactionId, accountNo, type, amount, description);
+        Transaction transaction = new Transaction() {
+            private final String tid = transactionId;
+            private final int accNo = accountNo;
+            private final String txType = type;
+            private final double txAmount = amount;
+            private final String desc = description;
+            private final LocalDateTime timestamp = LocalDateTime.now();
+
+            @Override
+            public String getTransactionId() {
+                return tid;
+            }
+
+            @Override
+            public int getAccountNumber() {
+                return accNo;
+            }
+
+            @Override
+            public String getType() {
+                return txType;
+            }
+
+            @Override
+            public double getAmount() {
+                return txAmount;
+            }
+
+            @Override
+            public String getDescription() {
+                return desc;
+            }
+
+            @Override
+            public LocalDateTime getTimestamp() {
+                return timestamp;
+            }
+        };
         transactionHistory.add(transaction);
         return transactionId;
     }
