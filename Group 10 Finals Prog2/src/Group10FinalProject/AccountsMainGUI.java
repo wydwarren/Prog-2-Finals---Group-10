@@ -1,5 +1,7 @@
 package Group10FinalProject;
 
+import Group10FinalProject.Exceptions.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -142,12 +144,50 @@ public class AccountsMainGUI extends JFrame {
         JButton closeBtn = createStyledButton("Close Account", new Color(180, 50, 50));
 
         // Add action listeners
-        depositBtn.addActionListener(e -> deposit());
-        withdrawBtn.addActionListener(e -> withdraw());
+        depositBtn.addActionListener(e -> {
+            try {
+                deposit();
+            } catch (InvalidAmountException ex) {
+                throw new RuntimeException(ex);
+            } catch (AccountClosedException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        withdrawBtn.addActionListener(e -> {
+            try {
+                withdraw();
+            } catch (TransactionLimitException ex) {
+                throw new RuntimeException(ex);
+            } catch (InsufficientFundsException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvalidAmountException ex) {
+                throw new RuntimeException(ex);
+            } catch (AccountClosedException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         inquireBtn.addActionListener(e -> inquireBalance());
-        closeBtn.addActionListener(e -> closeAccount());
+        closeBtn.addActionListener(e -> {
+            try {
+                closeAccount();
+            } catch (BankingException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         transferBtn.addActionListener(e -> transferMoney());
-        investBtn.addActionListener(e -> investment());
+        investBtn.addActionListener(e -> {
+            try {
+                investment();
+            } catch (TransactionLimitException ex) {
+                throw new RuntimeException(ex);
+            } catch (InsufficientFundsException ex) {
+                throw new RuntimeException(ex);
+            } catch (InvalidAmountException ex) {
+                throw new RuntimeException(ex);
+            } catch (AccountClosedException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         // Add buttons to panel
         buttonPanel.add(depositBtn);
@@ -238,7 +278,7 @@ public class AccountsMainGUI extends JFrame {
         }
     }
 
-    private void deposit() {
+    private void deposit() throws InvalidAmountException, AccountClosedException {
         try {
             double amount = Double.parseDouble(amountField.getText());
 
@@ -265,7 +305,7 @@ public class AccountsMainGUI extends JFrame {
         }
     }
 
-    private void investment() {
+    private void investment() throws TransactionLimitException, InsufficientFundsException, InvalidAmountException, AccountClosedException {
         try {
             if (!loggedInAccount.getStatus().equals("Active")) {
                 JOptionPane.showMessageDialog(
@@ -324,7 +364,7 @@ public class AccountsMainGUI extends JFrame {
         }
     }
 
-    private void withdraw() {
+    private void withdraw() throws TransactionLimitException, InsufficientFundsException, InvalidAmountException, AccountClosedException {
         try {
             if (!loggedInAccount.getStatus().equals("Active")) {
                 displayArea.append("Error: Cannot withdraw from a closed account.\n");
@@ -500,7 +540,8 @@ public class AccountsMainGUI extends JFrame {
                         );
                     }
 
-                } catch (NumberFormatException ex) {
+                } catch (NumberFormatException | InsufficientFundsException | InvalidAmountException |
+                         AccountClosedException | TransactionLimitException ex) {
                     JOptionPane.showMessageDialog(
                             transferDialog,
                             "Please enter valid account number and amount.",
@@ -518,7 +559,7 @@ public class AccountsMainGUI extends JFrame {
         }
     }
 
-    private void closeAccount() {
+    private void closeAccount() throws BankingException {
         if (!loggedInAccount.getStatus().equals("Active")) {
             displayArea.append("This account is already closed.\n");
             displayArea.append("--------------------------------------------------\n");

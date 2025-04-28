@@ -1,5 +1,9 @@
 package Group10FinalProject;
 
+import Group10FinalProject.Exceptions.AccountClosedException;
+import Group10FinalProject.Exceptions.BankingException;
+import Group10FinalProject.Exceptions.InvalidAmountException;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -191,7 +195,7 @@ public class LoginGUI extends JFrame {
         }
     }
 
-    public static ArrayList<BankAccounts> loadAccountsFromFile() {
+    public static ArrayList<BankAccounts> loadAccountsFromFile() throws BankingException {
         ArrayList<BankAccounts> accounts = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader("accounts.txt"))) {
